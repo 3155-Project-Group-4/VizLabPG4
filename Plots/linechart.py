@@ -11,7 +11,7 @@ maxs_df = new_df.max()
 # maxs_df = maxs_df.reset_index()
 
 # Prepare data
-data = [go.Scatter(x=maxs_df['date'].dt.month, y=maxs_df['actual_max_temp'], mode='lines', name='Max Temps')]
+data = [go.Scatter(x=maxs_df['date'].dt.month_name(), y=maxs_df['actual_max_temp'], mode='lines', name='Max Temps')]
 layout = go.Layout(title='2014-2015 Max Temps By Month', xaxis_title='Month', yaxis_title='Temperature')
 
 # Plot the figure
