@@ -14,7 +14,7 @@ app = dash.Dash()
 # Bar chart data
 # Load CSV file from Datasets folder
 df = pd.read_csv('../Datasets/Olympic2016Rio.csv')
-
+df4 = pd.read_csv('../Datasets/Weather2014-15.csv')
 # Sorting values and select first 20 countries
 new_df = df.sort_values(by=['Total'], ascending=[False]).head(20)
 
@@ -74,18 +74,19 @@ data_multiline = [trace1, trace2, trace3]
 
 
 # Bubble chart
-bubble_df = df1.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
-bubble_df['Unrecovered'] = bubble_df['Confirmed'] - bubble_df['Deaths'] - bubble_df['Recovered']
-bubble_df = bubble_df[(bubble_df['Country'] != 'China')]
-bubble_df = bubble_df.groupby(['Country']).agg(
-    {'Confirmed': 'sum', 'Recovered': 'sum', 'Unrecovered': 'sum'}).reset_index()
+bubble_df = df4.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+
+bubble_df = bubble_df.groupby(['date']).agg(
+    { 'average_max_temp': 'sum', 'average_min_temp': 'sum'}).reset_index()
 data_bubblechart = [
-    go.Scatter(x=bubble_df['Recovered'],
-               y=bubble_df['Unrecovered'],
-               text=bubble_df['Country'],
+    go.Scatter(x=bubble_df['average_min_temp'],
+               y=bubble_df['average_max_temp'],
+               text=bubble_df['date'],
+
                mode='markers',
-               marker=dict(size=bubble_df['Confirmed'] / 200, color=bubble_df['Confirmed'] / 200, showscale=True))
+               marker=dict(size=bubble_df['average_max_temp'], color=bubble_df['average_max_temp'], showscale=True))
 ]
+
 
 # Heatmap
 # Load CSV file from Datasets folder
@@ -170,12 +171,12 @@ app.layout = html.Div(children=[
     html.Hr(style={'color': '#7FDBFF'}),
     html.H3('Bubble chart', style={'color': '#df1e56'}),
     html.Div(
-        'This bubble chart represent the Corona Virus recovered and under treatment of all reported countries except China.'),
+        'This bubble chart represent the average minimum and maximum temperature for the given dates.'),
     dcc.Graph(id='graph6',
               figure={
                   'data': data_bubblechart,
-                  'layout': go.Layout(title='Corona Virus Confirmed Cases',
-                                      xaxis={'title': 'Recovered Cases'}, yaxis={'title': 'under Treatment Cases'},
+                  'layout': go.Layout(title='Average Temperatures',
+                                      xaxis={'title': 'Min Temp'}, yaxis={'title': 'Max Temp'},
                                       hovermode='closest')
               }
               ),
